@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Sheet } from '@/components/ui/Sheet'
 import { Spinner } from '@/components/ui/Empty'
 import { WeekStrip } from '@/components/home/WeekStrip'
+import { BodyweightCard } from '@/components/home/BodyweightCard'
+import { useWorkingWeights } from '@/hooks/useWorkingWeights'
+import { useSettings } from '@/hooks/useSettings'
+import { formatWeight } from '@/domain/units'
 import { useTodayPlan } from '@/hooks/useTodayPlan'
 import { useActiveWorkout } from '@/hooks/useActiveWorkout'
 import { useExercisesById, useRoutines } from '@/hooks/useData'
@@ -24,7 +28,17 @@ export default function Home() {
   const exercisesById = useExercisesById()
   const navigate = useNavigate()
   const now = useNow(1000, Boolean(active))
+  const settings = useSettings()
   const [picker, setPicker] = useState(false)
+  const planExerciseIds = useMemo(() => view.plan?.routine?.exercises.map((e) => e.exerciseId) ?? [], [view.plan])
+  const weights = useWorkingWeights(planExerciseIds)
+  const weightText = (exerciseId: string): string | null => {
+    const ex = exercisesById[exerciseId]
+    if (!ex || (ex.loadType !== 'external' && ex.loadType !== 'bodyweight_plus')) return null
+    const w = weights[exerciseId]
+    if (w === null || w === undefined) return null
+    return `${ex.loadType === 'bodyweight_plus' ? '+' : ''}${formatWeight(w, settings.unit)}`
+  }
 
   const start = async (routineId: string | null) => {
     unlockAudio()
@@ -76,12 +90,19 @@ export default function Home() {
               <h2 className="mt-1 text-2xl font-bold">{plan.routine.name}</h2>
               {plan.routine.description && <p className="mt-1 text-sm text-muted">{plan.routine.description}</p>}
               <ul className="mt-3 space-y-1 text-[15px]">
-                {plan.routine.exercises.map((e) => (
-                  <li key={e.id} className="flex justify-between gap-2">
-                    <span className="truncate">{exercisesById[e.exerciseId]?.name ?? '…'}</span>
-                    <span className="shrink-0 text-muted">{schemeLabel(e.scheme, e.sets.length)}</span>
-                  </li>
-                ))}
+                {plan.routine.exercises.map((e) => {
+                  const wt = weightText(e.exerciseId)
+                  return (
+                    <li key={e.id} className="flex justify-between gap-2">
+                      <span className="truncate">{exercisesById[e.exerciseId]?.name ?? '…'}</span>
+                      <span className="shrink-0 text-muted">
+                        {wt && <span className="font-semibold text-white">{wt}</span>}
+                        {wt ? ' · ' : ''}
+                        {schemeLabel(e.scheme, e.sets.length)}
+                      </span>
+                    </li>
+                  )
+                })}
               </ul>
               {plan.warn48h && plan.hoursSinceLast !== null && (
                 <p className="mt-3 rounded-xl bg-warn/15 p-2 text-sm text-warn">Only {Math.round(plan.hoursSinceLast)} h since your last session. The program asks for 48 h of recovery.</p>
@@ -140,6 +161,9 @@ export default function Home() {
         <DueRow label="Abs" sub="Strength over volume · 2–3× per week" done={view.abs.done} target={view.abs.target} onAdd={() => void addBlock(RT.abs)} />
         <DueRow label="Trifecta mobility" sub="Back bridge · L-sit · twist stretch" done={view.mobility.done} target={view.mobility.target} onAdd={() => void addBlock(RT.trifecta)} />
       </Card>
+
+      <h3 className="mb-2 mt-5 text-sm font-semibold uppercase tracking-wide text-muted">Bodyweight</h3>
+      <BodyweightCard today={view.today} />
 
       <Sheet open={picker} onClose={() => setPicker(false)} title="Which workout?">
         <div className="flex flex-col gap-2">
