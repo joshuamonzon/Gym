@@ -39,7 +39,7 @@ export default function Measures() {
 
   return (
     <div className="mx-auto max-w-lg px-4">
-      <TopBar back="/profile" title="Measures" />
+      <TopBar back="/profile" title="Bodyweight & waist" />
       <Card className="mb-3">
         <div className="grid grid-cols-2 gap-3">
           <Field label="Date">

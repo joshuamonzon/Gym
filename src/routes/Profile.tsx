@@ -6,7 +6,9 @@ import { Segmented } from '@/components/ui/Segmented'
 import { Select } from '@/components/ui/Inputs'
 import { Spinner, Empty } from '@/components/ui/Empty'
 import { Calendar, Chart, Dumbbell, Gear, Ruler } from '@/components/ui/Icons'
-import { useWorkouts, useWorkoutCount } from '@/hooks/useData'
+import { useLatestBodyweight, useWorkouts, useWorkoutCount } from '@/hooks/useData'
+import { CurrentLifts } from '@/components/home/CurrentLifts'
+import { formatWeight } from '@/domain/units'
 import { useSettings } from '@/hooks/useSettings'
 import { useNow } from '@/hooks/useNow'
 import { useWeeklyStats, type StatMetric } from '@/hooks/useWeeklyStats'
@@ -21,6 +23,7 @@ export default function Profile() {
   const settings = useSettings()
   const workouts = useWorkouts()
   const count = useWorkoutCount()
+  const bw = useLatestBodyweight()
   const today = toLocalDate(useNow(60_000))
   const [metric, setMetric] = useState<StatMetric>('duration')
   const [weeks, setWeeks] = useState(13)
@@ -54,7 +57,13 @@ export default function Profile() {
         <div>
           <div className="text-xl font-semibold">Greek God Program 2.0</div>
           <div className="text-sm text-muted">
-            <span className="text-white">{count}</span> workouts
+            <span className="text-white">{count}</span> {count === 1 ? 'workout' : 'workouts'}
+            {bw !== null && (
+              <>
+                {' · '}
+                <span className="text-white">{formatWeight(bw, settings.unit)}</span> bodyweight
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -87,10 +96,15 @@ export default function Profile() {
 
       <h2 className="mb-2 text-lg font-semibold text-muted">Dashboard</h2>
       <div className="mb-6 grid grid-cols-2 gap-3">
-        <Tile icon={<Chart />} label="Key Lifts" onClick={() => navigate('/key-lifts')} />
-        <Tile icon={<Dumbbell />} label="Exercises" onClick={() => navigate('/exercises')} />
-        <Tile icon={<Ruler />} label="Measures" onClick={() => navigate('/measures')} />
-        <Tile icon={<Calendar />} label="Calendar" onClick={() => navigate('/history')} />
+        <Tile icon={<Chart />} label="Key Lifts" sub="Targets & progress" onClick={() => navigate('/key-lifts')} />
+        <Tile icon={<Dumbbell />} label="Lifts" sub="Every exercise, charts" onClick={() => navigate('/exercises')} />
+        <Tile icon={<Ruler />} label="Bodyweight" sub={bw === null ? 'Not logged yet' : `${formatWeight(bw, settings.unit)} · waist`} onClick={() => navigate('/measures')} />
+        <Tile icon={<Calendar />} label="Calendar" sub="History & streak" onClick={() => navigate('/history')} />
+      </div>
+
+      <h2 className="mb-2 text-lg font-semibold text-muted">Current lifts</h2>
+      <div className="mb-6">
+        <CurrentLifts />
       </div>
 
       <h2 className="mb-2 text-lg font-semibold text-muted">Workouts</h2>
@@ -132,11 +146,14 @@ export default function Profile() {
   )
 }
 
-function Tile({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+function Tile({ icon, label, sub, onClick }: { icon: React.ReactNode; label: string; sub?: string; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className="flex items-center gap-3 rounded-2xl bg-surface px-4 py-4 text-left font-semibold active:bg-surface-2">
-      <span className="text-white">{icon}</span>
-      {label}
+    <button type="button" onClick={onClick} className="flex items-center gap-3 rounded-2xl bg-surface px-4 py-3 text-left active:bg-surface-2">
+      <span className="shrink-0 text-white">{icon}</span>
+      <span className="min-w-0">
+        <span className="block font-semibold">{label}</span>
+        {sub && <span className="block truncate text-xs text-muted">{sub}</span>}
+      </span>
     </button>
   )
 }
