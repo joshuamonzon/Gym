@@ -1,36 +1,23 @@
-import { useEffect } from 'react'
-import { Outlet, useLocation } from 'react-router'
-import { TabBar } from './components/ui/TabBar'
-import { Toast } from './components/ui/Toast'
-import { MinimizedWorkoutBar } from './components/workout/MinimizedWorkoutBar'
-import { useActiveWorkout } from './hooks/useActiveWorkout'
-import { useUiStore } from './store/uiStore'
-
-function UpdatePrompt() {
-  const active = useActiveWorkout()
-  const updateAvailable = useUiStore((s) => s.updateAvailable)
-  const applyUpdate = useUiStore((s) => s.applyUpdate)
-  const showToast = useUiStore((s) => s.showToast)
-  useEffect(() => {
-    if (updateAvailable && applyUpdate && active === undefined) {
-      showToast('A new version is ready.', { label: 'Reload', onAction: applyUpdate })
-    }
-  }, [updateAvailable, applyUpdate, active, showToast])
-  return null
-}
+import { Suspense, lazy, useState } from 'react'
+import { TabBar, type Tab } from './components/TabBar'
+import { Now } from './screens/Now'
+import { Weeks } from './screens/Weeks'
+const Charts = lazy(() => import('./screens/Charts').then((m) => ({ default: m.Charts })))
+import { Log } from './screens/Log'
 
 export default function App() {
-  const location = useLocation()
-  const fullScreen = location.pathname.startsWith('/workout/active')
+  const [tab, setTab] = useState<Tab>('now')
   return (
-    <div className="min-h-dvh bg-bg text-white">
-      <main className={fullScreen ? '' : 'pb-28'}>
-        <Outlet />
-      </main>
-      {!fullScreen && <MinimizedWorkoutBar />}
-      {!fullScreen && <TabBar />}
-      <Toast />
-      <UpdatePrompt />
+    <div className="mx-auto max-w-xl min-h-dvh pb-tabbar">
+      {tab === 'now' && <Now />}
+      {tab === 'weeks' && <Weeks />}
+      {tab === 'charts' && (
+        <Suspense fallback={<div className="pt-safe px-4 h-12 flex items-center text-lg font-semibold">Charts</div>}>
+          <Charts />
+        </Suspense>
+      )}
+      {tab === 'log' && <Log />}
+      <TabBar tab={tab} onChange={setTab} />
     </div>
   )
 }

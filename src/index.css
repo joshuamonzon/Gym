@@ -1,17 +1,31 @@
 @import "tailwindcss";
 
+/* Dark is the default; light only when the OS asks for it. */
 @theme {
-  --color-bg: #000000;
-  --color-surface: #1c1c1e;
-  --color-surface-2: #2c2c2e;
-  --color-border: #2c2c2e;
-  --color-muted: #8e8e93;
-  --color-accent: #3b82f6;
-  --color-accent-strong: #2563eb;
-  --color-warn: #f5a623;
-  --color-danger: #ef5350;
-  --color-success: #30d158;
+  --color-bg: #0b0b0d;
+  --color-surface: #16161a;
+  --color-surface-2: #222228;
+  --color-border: #2a2a31;
+  --color-fg: #f4f4f5;
+  --color-muted: #8b8b94;
+  --color-accent: #7aa2ff;
+  --color-up: #34d399;
+  --color-down: #f87171;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bg: #f4f4f5;
+    --color-surface: #ffffff;
+    --color-surface-2: #ececef;
+    --color-border: #d9d9de;
+    --color-fg: #111114;
+    --color-muted: #6b6b75;
+    --color-accent: #2f5fd6;
+    --color-up: #0f9f6e;
+    --color-down: #d0433f;
+  }
 }
 
 @utility pt-safe {
@@ -20,8 +34,8 @@
 @utility pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
-@utility mb-safe {
-  margin-bottom: env(safe-area-inset-bottom);
+@utility pb-tabbar {
+  padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
 }
 
 html, body, #root {
@@ -29,23 +43,17 @@ html, body, #root {
 }
 body {
   background: var(--color-bg);
-  color: white;
-  overscroll-behavior: none;
+  color: var(--color-fg);
+  overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
-input, select, textarea, button {
+button {
   font: inherit;
+  color: inherit;
 }
-input, select, textarea {
-  font-size: 16px;
-}
-button, a, [role="button"] {
-  touch-action: manipulation;
-}
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.recharts-wrapper, .recharts-surface {
+  outline: none;
 }
