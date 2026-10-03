@@ -22,6 +22,12 @@ want the other reading.
    branch `main`. One click, no code change. Until then, redeploy with
    `npx vercel --prod` after merging.
 
+   The deployment reports READY and is aliased to the URL above, but this
+   session's network policy blocks `*.vercel.app`, so I could not load the live
+   page myself. Please open it once on your phone to confirm; the identical
+   production build was checked locally (all four screens at 390 px, no console
+   errors, service worker active, `display: standalone` manifest).
+
 ## Math defaults I chose
 
 3. **Weekly avg pace** is distance-weighted: total run seconds ÷ total run miles.
