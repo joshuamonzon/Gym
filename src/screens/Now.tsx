@@ -3,52 +3,100 @@ import { config, days } from '../lib/data'
 import { nowStats } from '../lib/rollups'
 import { todayLocal } from '../lib/dates'
 import { mmss, num, shortDate, signed } from '../lib/format'
-import { Card, ScreenHeader, Stat } from '../components/ui'
-import { deltaTone } from '../lib/tone'
+import { Card, Hero, ScreenHeader, Stat } from '../components/ui'
+import { deltaTone, toneCls } from '../lib/tone'
 
+/**
+ * Three things, top to bottom: where you are in the challenge, what you weigh,
+ * what you've done this week. Anything not logged yet is left out, not dashed.
+ */
 export function Now() {
   const today = todayLocal()
   const n = useMemo(() => nowStats(days, config, today), [today])
-  const dayLabel =
-    n.challengeDay === undefined
-      ? `starts ${shortDate(config.challenge.start)}`
-      : n.challengeDay > n.challengeLength
-        ? 'done'
-        : `day ${n.challengeDay}/${n.challengeLength}`
+
+  const started = n.challengeDay !== undefined
+  const done = started && n.challengeDay! > n.challengeLength
+  const hasWeight = n.latestWeight !== undefined
+  const hasFuel = n.avg7Cals !== undefined || n.avg7Carbs !== undefined
 
   return (
     <>
-      <ScreenHeader title="Now" right={<span className="text-xs text-muted">{shortDate(today)}</span>} />
+      <ScreenHeader title="Today" right={<span className="text-sm text-muted">{shortDate(today)}</span>} />
       <main className="px-4 space-y-3">
-        <Card className="p-4 grid grid-cols-3 gap-3">
-          <Stat
-            label={n.latestWeight && n.latestWeight.date === today ? 'Weight today' : 'Latest weight'}
-            value={num(n.latestWeight?.weight, 1)}
-            sub={n.latestWeight && n.latestWeight.date !== today ? shortDate(n.latestWeight.date) : 'lb'}
-          />
-          <Stat label="Δ vs start" value={signed(n.deltaFromStart, 1)} tone={deltaTone(n.deltaFromStart, 'down')} sub={`from ${num(config.start_weight_lb, 1)}`} />
-          <Stat label="7-day avg" value={num(n.avg7Weight, 1)} sub="lb" />
+        {/* Challenge */}
+        <Card className="p-5">
+          {!started ? (
+            <Hero label={config.challenge.name} value="Soon" sub={`Starts ${shortDate(config.challenge.start)}`} />
+          ) : done ? (
+            <Hero label={config.challenge.name} value="Done" sub={`${n.challengeLength} days`} />
+          ) : (
+            <Hero
+              label={config.challenge.name}
+              value={`Day ${n.challengeDay}`}
+              unit={`of ${n.challengeLength}`}
+              sub={
+                n.streak > 0
+                  ? `${n.streak}-day streak`
+                  : 'No streak yet — a 5K today starts one'
+              }
+            />
+          )}
+          {started && !done && (
+            <div className="mt-4 h-1.5 rounded-full bg-surface-2 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-accent"
+                style={{ width: `${Math.min(100, ((n.challengeDay! - 1) / n.challengeLength) * 100)}%` }}
+              />
+            </div>
+          )}
         </Card>
 
-        <Card className="p-4 grid grid-cols-2 gap-3">
-          <Stat label="7-day avg cals" value={num(n.avg7Cals)} />
-          <Stat label="7-day avg carbs" value={num(n.avg7Carbs)} sub="g" />
+        {/* Weight */}
+        {hasWeight && (
+          <Card className="p-5">
+            <Hero
+              label={n.latestWeight!.date === today ? 'Weight today' : `Weight · ${shortDate(n.latestWeight!.date)}`}
+              value={num(n.latestWeight!.weight, 1)}
+              unit="lb"
+              sub={
+                <span className={toneCls(deltaTone(n.deltaFromStart, 'down'))}>
+                  {signed(n.deltaFromStart, 1)} lb since {num(config.start_weight_lb, 1)}
+                </span>
+              }
+            />
+          </Card>
+        )}
+
+        {/* This week */}
+        <Card className="p-5">
+          <div className="text-sm text-muted mb-3">This week</div>
+          <div className="grid grid-cols-3 gap-3">
+            <Stat label="Miles" value={num(n.thisWeek.miles, 1)} />
+            <Stat label="Runs" value={String(n.thisWeek.runDays)} />
+            <Stat label="Lifts" value={String(n.thisWeek.liftDays)} />
+          </div>
         </Card>
 
-        <Card className="p-4 grid grid-cols-2 gap-3">
-          <Stat label={config.challenge.name} value={dayLabel} />
-          <Stat label="Streak" value={String(n.streak)} sub={`day${n.streak === 1 ? '' : 's'} ≥ 3.1 mi`} />
-        </Card>
+        {/* Bests — only once there's something to show */}
+        {(n.best5kSeconds !== undefined || n.benchE1rm !== undefined) && (
+          <Card className="p-5">
+            <div className="text-sm text-muted mb-3">Bests</div>
+            <div className="grid grid-cols-2 gap-3">
+              {n.best5kSeconds !== undefined && <Stat label="5K this month" value={mmss(n.best5kSeconds)} />}
+              {n.benchE1rm !== undefined && <Stat label="Bench e1RM" value={num(n.benchE1rm)} unit="lb" />}
+            </div>
+          </Card>
+        )}
 
-        <Card className="p-4 grid grid-cols-2 gap-3">
-          <Stat label="Best 5K this month" value={mmss(n.best5kSeconds)} />
-          <Stat label="Bench e1RM" value={num(n.benchE1rm)} sub="lb" />
-        </Card>
-
-        <p className="text-sm text-muted px-1 tabular-nums">
-          This week so far: {num(n.thisWeek.miles, 2)} mi · {n.thisWeek.runDays} run day{n.thisWeek.runDays === 1 ? '' : 's'} ·{' '}
-          {n.thisWeek.liftDays} lift day{n.thisWeek.liftDays === 1 ? '' : 's'}
-        </p>
+        {hasFuel && (
+          <Card className="p-5">
+            <div className="text-sm text-muted mb-3">7-day fuel</div>
+            <div className="grid grid-cols-2 gap-3">
+              {n.avg7Cals !== undefined && <Stat label="Calories" value={num(n.avg7Cals)} />}
+              {n.avg7Carbs !== undefined && <Stat label="Carbs" value={num(n.avg7Carbs)} unit="g" />}
+            </div>
+          </Card>
+        )}
       </main>
     </>
   )

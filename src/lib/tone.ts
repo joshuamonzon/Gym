@@ -4,3 +4,8 @@ export function deltaTone(delta: number | undefined, goodWhen: 'down' | 'up'): '
   const improved = goodWhen === 'down' ? delta < 0 : delta > 0
   return improved ? 'up' : 'down'
 }
+
+/** Tailwind class for a tone. */
+export function toneCls(t: 'up' | 'down' | undefined): string {
+  return t === 'up' ? 'text-up' : t === 'down' ? 'text-down' : ''
+}
