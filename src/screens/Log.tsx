@@ -1,8 +1,8 @@
-import { days } from '../lib/data'
+import { config, days } from '../lib/data'
 import type { Day } from '../lib/schema'
 import { dowDate } from '../lib/format'
 import { Card, Empty, ScreenHeader } from '../components/ui'
-import { bodyLine, fuelLine, liftsLine, runLine } from '../lib/summary'
+import { bodyLine, fuelLine, liftsLine, runDetailLine, runLine } from '../lib/summary'
 
 /** Every day entry, newest first, written out in plain words. */
 export function Log() {
@@ -22,7 +22,8 @@ export function Log() {
 
 function Entry({ day }: { day: Day }) {
   const facts = [
-    ['Run', runLine(day, true)],
+    ['Run', day.run ? [runLine(day), day.run.surface].filter(Boolean).join(' · ') : undefined],
+    ['', runDetailLine(day, days, config)],
     ['Lifts', liftsLine(day)],
     ['Body', bodyLine(day)],
     ['Fuel', fuelLine(day)],
@@ -33,8 +34,8 @@ function Entry({ day }: { day: Day }) {
       <h2 className="text-lg font-semibold">{dowDate(day.date)}</h2>
       {facts.length > 0 && (
         <div className="mt-3 space-y-2">
-          {facts.map(([k, v]) => (
-            <div key={k} className="grid grid-cols-[3.25rem_1fr] gap-3 text-sm">
+          {facts.map(([k, v], i) => (
+            <div key={i} className="grid grid-cols-[3.25rem_1fr] gap-3 text-sm">
               <span className="text-muted">{k}</span>
               <span className="tabular-nums">{v}</span>
             </div>

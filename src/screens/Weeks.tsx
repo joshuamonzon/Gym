@@ -4,7 +4,7 @@ import { weeklyRollups, type WeekRollup } from '../lib/rollups'
 import { dowDate, liftLabel, num, pace, signed, topSet, weekLabel } from '../lib/format'
 import { Card, Empty, ScreenHeader, Stat } from '../components/ui'
 import { deltaTone, toneCls } from '../lib/tone'
-import { bodyLine, fuelLine, liftsLine, runLine } from '../lib/summary'
+import { bodyLine, fuelLine, liftsLine, runDetailLine, runLine } from '../lib/summary'
 import type { Day } from '../lib/schema'
 
 /** One card per week, newest first. Headline numbers only; tap for the days. */
@@ -25,7 +25,7 @@ export function Weeks() {
 }
 
 // Tailwind needs literal class names.
-const GRID = ['', 'grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-2'] as const
+const GRID = ['', 'grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-2', 'grid-cols-3', 'grid-cols-3'] as const
 
 function WeekCard({ week: w, open, onToggle }: { week: WeekRollup; open: boolean; onToggle: () => void }) {
   // Only show what was actually logged. Four slots max.
@@ -35,6 +35,9 @@ function WeekCard({ week: w, open, onToggle }: { week: WeekRollup; open: boolean
   }
   if (w.avgPace !== undefined) {
     stats.push(<Stat key="pace" label="Pace" value={pace(w.avgPace)} unit="/mi" sub={w.avgRunHr !== undefined ? `${num(w.avgRunHr)} bpm` : undefined} />)
+  }
+  if (w.estBurn > 0) {
+    stats.push(<Stat key="burn" label="Est. burn" value={`~${num(w.estBurn)}`} unit="cal" sub="from runs" />)
   }
   if (w.avgWeight !== undefined) {
     const t = deltaTone(w.deltaWeight, 'down')
@@ -51,8 +54,8 @@ function WeekCard({ week: w, open, onToggle }: { week: WeekRollup; open: boolean
   if (w.avgSleep !== undefined) {
     stats.push(<Stat key="sleep" label="Sleep" value={num(w.avgSleep, 1)} unit="h" />)
   }
-  if (stats.length < 4 && w.avgCals !== undefined) {
-    stats.push(<Stat key="cals" label="Calories" value={num(w.avgCals)} />)
+  if (w.avgCals !== undefined) {
+    stats.push(<Stat key="cals" label="Eaten" value={num(w.avgCals)} unit="cal" sub="daily avg" />)
   }
 
   const liftParts = config.tracked_lifts
@@ -81,7 +84,7 @@ function WeekCard({ week: w, open, onToggle }: { week: WeekRollup; open: boolean
         </div>
 
         {stats.length > 0 && (
-          <div className={`mt-4 grid gap-4 ${GRID[Math.min(stats.length, 4)]}`}>{stats}</div>
+          <div className={`mt-4 grid gap-4 ${GRID[Math.min(stats.length, 6)]}`}>{stats}</div>
         )}
 
         {liftParts.length > 0 && (
@@ -104,7 +107,9 @@ function WeekCard({ week: w, open, onToggle }: { week: WeekRollup; open: boolean
 
 /** One day, as sentences. Blank fields don't appear. */
 function DayRow({ day }: { day: Day }) {
-  const lines = [runLine(day), liftsLine(day), bodyLine(day), fuelLine(day)].filter((l): l is string => !!l)
+  const lines = [runLine(day), runDetailLine(day, days, config), liftsLine(day), bodyLine(day), fuelLine(day)].filter(
+    (l): l is string => !!l,
+  )
   return (
     <div className="py-3 border-t border-border/60 first:border-t-0">
       <div className="flex items-baseline justify-between gap-3">

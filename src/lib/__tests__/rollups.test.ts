@@ -9,6 +9,7 @@ import {
   epley,
   nowStats,
   paceSecPerMile,
+  runCalories,
   weeklyRollups,
   weightSeries,
 } from '../rollups'
@@ -105,6 +106,12 @@ describe('weekly rollup — Oct 1–3 seed data, by hand', () => {
     expect(w.avgPace).toBeCloseTo(4696 / 6.28, 5) // 747.77 s/mi = 12:28 /mi
     expect(w.avgRunHr).toBe(127)
     expect(w.runDays).toBe(2)
+  })
+
+  it('est burn: 0.63 × 167.4 lb × 6.28 mi = 662.3 kcal (no weigh-in before Oct 3 → start weight)', () => {
+    expect(runCalories({ miles: 3.18 }, 167.4)).toBeCloseTo(335.4, 1)
+    expect(runCalories(undefined, 167.4)).toBeUndefined()
+    expect(w.estBurn).toBeCloseTo(0.63 * 167.4 * 6.28, 3)
   })
 
   it('efficiency is the mean of the two runs: (0.99914 + 1.03516) / 2', () => {
@@ -210,5 +217,6 @@ describe('now stats — seed data on 2026-10-03', () => {
     expect(n.thisWeek.miles).toBeCloseTo(6.28, 5)
     expect(n.thisWeek.runDays).toBe(2)
     expect(n.thisWeek.liftDays).toBe(2)
+    expect(n.thisWeek.estBurn).toBeCloseTo(0.63 * 167.4 * 6.28, 3)
   })
 })

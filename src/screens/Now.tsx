@@ -59,9 +59,13 @@ export function Now() {
               value={num(n.latestWeight!.weight, 1)}
               unit="lb"
               sub={
-                <span className={toneCls(deltaTone(n.deltaFromStart, 'down'))}>
-                  {signed(n.deltaFromStart, 1)} lb since {num(config.start_weight_lb, 1)}
-                </span>
+                n.deltaFromStart !== undefined && Math.abs(n.deltaFromStart) >= 0.05 ? (
+                  <span className={toneCls(deltaTone(n.deltaFromStart, 'down'))}>
+                    {signed(n.deltaFromStart, 1)} lb from {num(config.start_weight_lb, 1)}
+                  </span>
+                ) : (
+                  'Starting weight'
+                )
               }
             />
           </Card>
@@ -75,6 +79,12 @@ export function Now() {
             <Stat label="Runs" value={String(n.thisWeek.runDays)} />
             <Stat label="Lifts" value={String(n.thisWeek.liftDays)} />
           </div>
+          {n.thisWeek.estBurn > 0 && (
+            <p className="mt-4 text-sm text-muted">
+              ~{num(n.thisWeek.estBurn)} cal burned running
+              {n.avg7Cals !== undefined && ` · eating ${num(n.avg7Cals)}/day`}
+            </p>
+          )}
         </Card>
 
         {/* Bests — only once there's something to show */}

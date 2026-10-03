@@ -42,6 +42,21 @@ export function aerobicEfficiency(run: Run): number | undefined {
   return metersPerMin / run.avg_hr
 }
 
+/**
+ * Estimated calories burned by a run: 0.63 kcal per lb of bodyweight per mile
+ * (the common net-of-resting estimate). Rough by design — no HR or grade term.
+ */
+export const KCAL_PER_LB_MILE = 0.63
+export function runCalories(run: Run | undefined, bodyweightLb: number): number | undefined {
+  if (!run?.miles) return undefined
+  return KCAL_PER_LB_MILE * bodyweightLb * run.miles
+}
+
+/** Sum of estimated run burn across days, using each day's bodyweight. */
+export function totalRunCalories(days: Day[], allDays: Day[], config: Config): number {
+  return sum(defined(days.map((d) => runCalories(d.run, bodyweightOn(d.date, allDays, config)))))
+}
+
 export function isChallengeRun(run: Run | undefined): run is Run {
   return !!run && (run.miles ?? 0) >= FIVE_K_MILES
 }
@@ -123,6 +138,8 @@ export interface WeekRollup {
   /** mean of per-run aerobic efficiency */
   efficiency?: number
   runDays: number
+  /** estimated calories burned by this week's runs */
+  estBurn: number
   shiftDays: number
   avgSleep?: number
   /** keyed by tracked lift */
@@ -152,6 +169,7 @@ export function rollupWeek(start: string, days: Day[], allDays: Day[], config: C
     avgRunHr: mean(defined(runs.map((r) => r.avg_hr))),
     efficiency: mean(defined(runs.map(aerobicEfficiency))),
     runDays: runs.length,
+    estBurn: totalRunCalories(days, allDays, config),
     shiftDays: days.filter((d) => d.shift === true).length,
     avgSleep: mean(defined(days.map((d) => d.sleep_h))),
     lifts,
@@ -234,7 +252,7 @@ export interface NowStats {
   /** seconds of the fastest run ≥ 3.1 mi in the calendar month of `today` */
   best5kSeconds?: number
   benchE1rm?: number
-  thisWeek: { miles: number; runDays: number; liftDays: number }
+  thisWeek: { miles: number; runDays: number; liftDays: number; estBurn: number }
 }
 
 /**
@@ -282,6 +300,7 @@ export function nowStats(days: Day[], config: Config, today: string): NowStats {
       miles: sum(defined(thisWeekDays.map((d) => d.run?.miles))),
       runDays: thisWeekDays.filter((d) => d.run).length,
       liftDays: thisWeekDays.filter((d) => (d.lifts?.length ?? 0) > 0).length,
+      estBurn: totalRunCalories(thisWeekDays, sorted, config),
     },
   }
 }

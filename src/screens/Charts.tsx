@@ -4,7 +4,7 @@ import { config, days } from '../lib/data'
 import { dailyE1rm, weeklyRollups, weightSeries } from '../lib/rollups'
 import { addDays, todayLocal, weekStartOf } from '../lib/dates'
 import { liftLabel, num, pace, shortDate, weekLabel } from '../lib/format'
-import { Card, Empty, ScreenHeader, Segmented } from '../components/ui'
+import { Card, ScreenHeader, Segmented } from '../components/ui'
 
 type Range = '4w' | '8w' | 'all'
 
@@ -21,7 +21,9 @@ const tooltipStyle = {
   itemStyle: { padding: 0 },
 }
 const axis = { tick: { fontSize: 11, fill: C.text }, axisLine: false, tickLine: false } as const
-const margin = { top: 8, right: 8, left: -12, bottom: 0 }
+const margin = { top: 8, right: 8, left: -4, bottom: 0 }
+/** Keeps edge dots inside the plot area. */
+const pad = { left: 16, right: 16 }
 
 /** First day included for a range, anchored to the current week. */
 function rangeStart(range: Range, today: string): string | undefined {
@@ -74,23 +76,31 @@ export function Charts() {
       />
       <main className="px-4 space-y-3">
         {charts}
-        {days.length < 7 && <Empty>Charts fill in as the days add up.</Empty>}
+        {days.length < 7 && <p className="text-xs text-muted text-center py-2">More shows up as the days add up.</p>}
       </main>
     </>
   )
 }
 
-function ChartCard({ title, sub, children, right }: { title: string; sub?: string; children: React.ReactNode; right?: React.ReactNode }) {
+function ChartCard({
+  title,
+  sub,
+  children,
+  footer,
+}: {
+  title: string
+  sub?: string
+  children: React.ReactNode
+  footer?: React.ReactNode
+}) {
   return (
     <Card className="p-4">
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <h2 className="font-semibold">{title}</h2>
-          {sub && <p className="text-xs text-muted mt-0.5">{sub}</p>}
-        </div>
-        {right}
+      <div className="mb-3">
+        <h2 className="font-semibold">{title}</h2>
+        {sub && <p className="text-xs text-muted mt-0.5">{sub}</p>}
       </div>
-      <div className="h-48">{children}</div>
+      <div className="h-44">{children}</div>
+      {footer && <div className="mt-3">{footer}</div>}
     </Card>
   )
 }
@@ -114,8 +124,8 @@ function WeightChart({ daysIn }: { daysIn: typeof days }) {
       <ResponsiveContainer>
         <ComposedChart data={series} margin={margin}>
           <CartesianGrid stroke={C.grid} vertical={false} />
-          <XAxis dataKey="date" tickFormatter={shortDate} minTickGap={32} {...axis} />
-          <YAxis domain={[lo, hi]} ticks={ticks} width={48} {...axis} />
+          <XAxis dataKey="date" tickFormatter={shortDate} minTickGap={32} padding={pad} {...axis} />
+          <YAxis domain={[lo, hi]} ticks={ticks} width={44} {...axis} />
           <Tooltip
             {...tooltipStyle}
             labelFormatter={(d) => shortDate(String(d))}
@@ -139,7 +149,7 @@ function MilesChart({ weeks }: { weeks: Week[] }) {
         <ComposedChart data={data} margin={margin}>
           <CartesianGrid stroke={C.grid} vertical={false} />
           <XAxis dataKey="start" tickFormatter={shortDate} {...axis} />
-          <YAxis width={48} {...axis} />
+          <YAxis width={44} {...axis} />
           <Tooltip {...tooltipStyle} {...weekTip} formatter={(v) => [`${num(Number(v), 1)} mi`, '']} />
           <Bar dataKey="miles" fill={C.s1} radius={[6, 6, 0, 0]} maxBarSize={40} isAnimationActive={false} />
         </ComposedChart>
@@ -157,8 +167,8 @@ function PaceChart({ weeks }: { weeks: Week[] }) {
       <ResponsiveContainer>
         <ComposedChart data={data} margin={margin}>
           <CartesianGrid stroke={C.grid} vertical={false} />
-          <XAxis dataKey="start" tickFormatter={shortDate} {...axis} />
-          <YAxis width={48} reversed domain={['dataMin - 30', 'dataMax + 30']} tickFormatter={(v) => pace(Number(v))} {...axis} />
+          <XAxis dataKey="start" tickFormatter={shortDate} padding={pad} {...axis} />
+          <YAxis width={52} reversed domain={['dataMin - 30', 'dataMax + 30']} tickFormatter={(v) => pace(Number(v))} {...axis} />
           <Tooltip {...tooltipStyle} {...weekTip} formatter={(v) => [`${pace(Number(v))} /mi`, '']} />
           <Line type="monotone" dataKey="pace" stroke={C.s2} strokeWidth={2} dot={{ r: 4, fill: C.s2 }} connectNulls isAnimationActive={false} />
         </ComposedChart>
@@ -190,13 +200,31 @@ function LiftsChart({ daysIn }: { daysIn: typeof days }) {
       else n.add(key)
       return n
     })
+  const pills = (
+    <div className="flex flex-wrap gap-2">
+      {present.map((lift) => {
+        const off = hidden.has(lift)
+        return (
+          <button
+            key={lift}
+            onClick={() => toggle(lift)}
+            aria-pressed={!off}
+            className={`inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-xs ${off ? 'text-muted' : 'text-fg'}`}
+          >
+            <span className="size-2 rounded-full" style={{ background: LIFT_COLOR[lift], opacity: off ? 0.3 : 1 }} />
+            {liftLabel(lift)}
+          </button>
+        )
+      })}
+    </div>
+  )
   return (
-    <ChartCard title="Lifts" sub="estimated 1RM, lb">
+    <ChartCard title="Lifts" sub="estimated 1RM, lb" footer={pills}>
       <ResponsiveContainer>
         <ComposedChart data={data} margin={margin}>
           <CartesianGrid stroke={C.grid} vertical={false} />
-          <XAxis dataKey="date" tickFormatter={shortDate} minTickGap={32} {...axis} />
-          <YAxis width={48} domain={['auto', 'auto']} {...axis} />
+          <XAxis dataKey="date" tickFormatter={shortDate} minTickGap={32} padding={pad} {...axis} />
+          <YAxis width={44} domain={['auto', 'auto']} {...axis} />
           <Tooltip {...tooltipStyle} labelFormatter={(d) => shortDate(String(d))} />
           {present.map((lift) => (
             <Line
@@ -213,22 +241,6 @@ function LiftsChart({ daysIn }: { daysIn: typeof days }) {
           ))}
         </ComposedChart>
       </ResponsiveContainer>
-      <div className="flex flex-wrap gap-2 mt-3">
-        {present.map((lift) => {
-          const off = hidden.has(lift)
-          return (
-            <button
-              key={lift}
-              onClick={() => toggle(lift)}
-              aria-pressed={!off}
-              className={`inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-xs ${off ? 'text-muted' : 'text-fg'}`}
-            >
-              <span className="size-2 rounded-full" style={{ background: LIFT_COLOR[lift], opacity: off ? 0.3 : 1 }} />
-              {liftLabel(lift)}
-            </button>
-          )
-        })}
-      </div>
     </ChartCard>
   )
 }
@@ -243,7 +255,7 @@ function CaloriesChart({ weeks }: { weeks: Week[] }) {
         <ComposedChart data={data} margin={margin}>
           <CartesianGrid stroke={C.grid} vertical={false} />
           <XAxis dataKey="start" tickFormatter={shortDate} {...axis} />
-          <YAxis width={48} {...axis} />
+          <YAxis width={44} {...axis} />
           <Tooltip {...tooltipStyle} {...weekTip} formatter={(v) => [num(Number(v)), '']} />
           <Bar dataKey="cals" fill={C.s3} radius={[6, 6, 0, 0]} maxBarSize={40} isAnimationActive={false} />
         </ComposedChart>

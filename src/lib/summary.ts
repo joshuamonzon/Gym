@@ -1,24 +1,33 @@
-/** One-line, human-readable summaries of a day. Missing fields are simply left out. */
-import type { Day } from './schema'
-import { aerobicEfficiency, paceSecPerMile } from './rollups'
+/** Short, human-readable facts about a day. Missing fields are simply left out. */
+import type { Config, Day } from './schema'
+import { aerobicEfficiency, bodyweightOn, paceSecPerMile, runCalories } from './rollups'
 import { liftLabel, mmss, num, pace, topSet } from './format'
 
-/** "3.18 mi · 12:35 /mi · 128 bpm" */
-export function runLine(day: Day, withEff = false): string | undefined {
+/** "3.18 mi in 40:01" */
+export function runLine(day: Day): string | undefined {
   const r = day.run
   if (!r) return undefined
   const parts: string[] = []
   if (r.miles !== undefined) parts.push(`${num(r.miles, 2)} mi`)
-  if (r.seconds !== undefined) parts.push(mmss(r.seconds))
+  if (r.seconds !== undefined) parts.push(`in ${mmss(r.seconds)}`)
+  return parts.length ? parts.join(' ') : 'run'
+}
+
+/** "12:35/mi · 128 bpm · ~335 cal" (+ efficiency when asked) */
+export function runDetailLine(day: Day, allDays: Day[], config: Config, withEff = false): string | undefined {
+  const r = day.run
+  if (!r) return undefined
+  const parts: string[] = []
   const p = paceSecPerMile(r)
-  if (p !== undefined) parts.push(`${pace(p)} /mi`)
+  if (p !== undefined) parts.push(`${pace(p)}/mi`)
   if (r.avg_hr !== undefined) parts.push(`${r.avg_hr} bpm`)
+  const kcal = runCalories(r, bodyweightOn(day.date, allDays, config))
+  if (kcal !== undefined) parts.push(`~${num(kcal)} cal`)
   if (withEff) {
     const e = aerobicEfficiency(r)
     if (e !== undefined) parts.push(`eff ${num(e, 2)}`)
   }
-  if (r.surface) parts.push(r.surface)
-  return parts.join(' · ')
+  return parts.length ? parts.join(' · ') : undefined
 }
 
 /** "Bench 225×5 · Pull-up +50×5" */
@@ -36,7 +45,7 @@ export function fuelLine(day: Day): string | undefined {
   return parts.length ? parts.join(' · ') : undefined
 }
 
-/** "167.4 lb · 7.3 h sleep · shift" */
+/** "167.4 lb · 7.3 h sleep · 24-hr shift" */
 export function bodyLine(day: Day): string | undefined {
   const parts: string[] = []
   if (day.weight_lb !== undefined) parts.push(`${num(day.weight_lb, 1)} lb`)
