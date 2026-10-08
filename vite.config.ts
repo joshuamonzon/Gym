@@ -28,7 +28,10 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Bump when a change must reach installed PWAs promptly.
+        cacheId: 'training-v2',
         globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
+        cleanupOutdatedCaches: true,
       },
     }),
   ],

@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-08",
+  "plan": {
+    "cardio": { "type": "bike", "label": "Kickr Zone 2", "target": "HR ≤135", "duration_min": 40 },
+    "lift": {
+      "name": "Upper — strength",
+      "exercises": [
+        {
+          "name": "Bench",
+          "sets": [
+            { "w": 45, "r": 10, "warmup": true },
+            { "w": 135, "r": 8, "warmup": true },
+            { "w": 185, "r": 3, "warmup": true },
+            { "w": 205, "r": 1, "warmup": true },
+            { "w": 225, "r": 1, "warmup": true },
+            { "w": 225, "r": 5 },
+            { "w": 225, "r": 5 },
+            { "w": 225, "r": 5 }
+          ],
+          "rest_s": 180
+        },
+        {
+          "name": "Pull-ups",
+          "note": "Bodyweight, 3-sec negatives. Goal 26+ total.",
+          "sets": [
+            { "w": "BW", "r": "max", "note": "target 10" },
+            { "w": "BW", "r": "max", "note": "target 8" },
+            { "w": "BW", "r": "max", "note": "target 5" },
+            { "w": "BW", "r": "to failure" }
+          ],
+          "rest_s": 120
+        },
+        {
+          "name": "Rows",
+          "sets": [{ "w": 170, "r": 5 }, { "w": 170, "r": 5 }, { "w": 170, "r": 5 }]
+        }
+      ],
+      "notes": ["No hamstring loading or deep hip flexion"]
+    }
+  }
+}

@@ -46,3 +46,28 @@ describe('ConfigSchema', () => {
     expect(ConfigSchema.safeParse({ ...cfg, week_start: 'sunday' }).success).toBe(false)
   })
 })
+
+describe('plan', () => {
+  it('accepts a full plan with numeric and string set values', () => {
+    const r = DaySchema.safeParse({
+      date: '2026-10-08',
+      plan: {
+        cardio: { type: 'bike', label: 'Kickr Zone 2', target: 'HR ≤135', duration_min: 40 },
+        lift: {
+          name: 'Upper — strength',
+          exercises: [
+            { name: 'Bench', sets: [{ w: 45, r: 10, warmup: true }, { w: 225, r: 5 }], rest_s: 180 },
+            { name: 'Pull-ups', note: 'BW', sets: [{ w: 'BW', r: 'max', note: 'target 10' }, { w: '+45', r: 'to failure' }] },
+          ],
+          notes: ['No hamstring loading'],
+        },
+      },
+    })
+    expect(r.success).toBe(true)
+  })
+  it('rejects unknown cardio types and unknown keys', () => {
+    expect(DaySchema.safeParse({ date: '2026-10-08', plan: { cardio: { type: 'swim' } } }).success).toBe(false)
+    expect(DaySchema.safeParse({ date: '2026-10-08', plan: { lift: { exercises: [{ name: 'Bench', sets: [{ w: 225, r: 5, rpe: 8 }] }] } } }).success).toBe(false)
+    expect(DaySchema.safeParse({ date: '2026-10-08', plan: { mobility: true } }).success).toBe(false)
+  })
+})

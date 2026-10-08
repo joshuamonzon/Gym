@@ -5,6 +5,7 @@ import { todayLocal } from '../lib/dates'
 import { mmss, num, shortDate, signed } from '../lib/format'
 import { Card, Hero, ScreenHeader, Stat } from '../components/ui'
 import { deltaTone, toneCls } from '../lib/tone'
+import { TodayCard } from '../components/TodayCard'
 
 /**
  * Three things, top to bottom: where you are in the challenge, what you weigh,
@@ -23,6 +24,8 @@ export function Now() {
     <>
       <ScreenHeader title="Today" right={<span className="text-sm text-muted">{shortDate(today)}</span>} />
       <main className="px-4 space-y-3">
+        <TodayCard date={today} plan={days.find((d) => d.date === today)?.plan} />
+
         {/* Challenge */}
         <Card className="p-5">
           {!started ? (

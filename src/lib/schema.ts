@@ -27,6 +27,43 @@ export const LiftSetSchema = z.strictObject({
   reps: posInt(),
 })
 
+/** A planned set: `w` is lb (number) or a string like "BW" / "+45"; `r` is reps or a short string. */
+export const PlanSetSchema = z.strictObject({
+  w: z.union([nonneg(), z.string().check(z.minLength(1))]),
+  r: z.union([posInt(), z.string().check(z.minLength(1))]),
+  warmup: z.optional(z.boolean()),
+  note: z.optional(z.string()),
+})
+
+export const PlanExerciseSchema = z.strictObject({
+  name: z.string().check(z.minLength(1)),
+  note: z.optional(z.string()),
+  sets: z.optional(z.array(PlanSetSchema)),
+  rest_s: z.optional(posInt()),
+})
+
+export const PlanCardioSchema = z.strictObject({
+  type: z.enum(['run', 'bike', 'walk', 'rest']),
+  label: z.optional(z.string()),
+  target: z.optional(z.string()),
+  duration_min: z.optional(positive()),
+})
+
+export const PlanLiftSchema = z.strictObject({
+  name: z.optional(z.string()),
+  exercises: z.optional(z.array(PlanExerciseSchema)),
+  notes: z.optional(z.array(z.string())),
+})
+
+/**
+ * The day's plan. Display only: nothing here feeds rollups or charts, and
+ * done-state for sets lives in localStorage, never in this file.
+ */
+export const PlanSchema = z.strictObject({
+  cardio: z.optional(PlanCardioSchema),
+  lift: z.optional(PlanLiftSchema),
+})
+
 /**
  * One day file: data/days/YYYY-MM-DD.json.
  * Every field optional except `date`. Missing fields are omitted, never null.
@@ -43,9 +80,14 @@ export const DaySchema = z.strictObject({
   bike_min: z.optional(nonneg()),
   lifts: z.optional(z.array(LiftSetSchema)),
   note: z.optional(z.string()),
+  plan: z.optional(PlanSchema),
 })
 
 export type Day = z.infer<typeof DaySchema>
+export type Plan = z.infer<typeof PlanSchema>
+export type PlanSet = z.infer<typeof PlanSetSchema>
+export type PlanExercise = z.infer<typeof PlanExerciseSchema>
+export type PlanCardio = z.infer<typeof PlanCardioSchema>
 export type Run = z.infer<typeof RunSchema>
 export type LiftSet = z.infer<typeof LiftSetSchema>
 
