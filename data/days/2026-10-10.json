@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-10",
+  "shift": true,
+  "note": "Day 10/31. Shift day — no lift. 5K back on per doctor.",
+  "plan": {
+    "cardio": { "type": "run", "label": "Easy 5K — first 2 min = hamstring jog test", "target": "11:30–12:00 /mi, HR ≤145. Pinch → walk it. No striders.", "duration_min": 40 }
+  }
+}

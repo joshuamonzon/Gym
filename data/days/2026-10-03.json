@@ -1,7 +1,10 @@
 {
   "date": "2026-10-03",
   "weight_lb": 167.4,
+  "cals": 3170,
+  "protein_g": 185,
   "sleep_h": 7.58,
   "shift": false,
-  "note": "Day 3/31. First weigh-in (baseline). Legs stiff in the morning, loosen through the day."
+  "run": { "miles": 3.10, "seconds": 2415, "avg_hr": 125, "surface": "outdoor" },
+  "note": "Day 3/31. First weigh-in (baseline). Outdoor with mom, walk breaks, hot. Kickr skipped. Upper lift skipped (drained). Ramen + froyo night."
 }

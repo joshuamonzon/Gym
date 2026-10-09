@@ -1,8 +1,10 @@
 {
   "date": "2026-10-02",
+  "cals": 2530,
+  "protein_g": 200,
   "sleep_h": 7.2,
   "shift": false,
   "run": { "miles": 3.10, "seconds": 2295, "avg_hr": 126, "surface": "treadmill" },
   "lifts": [{ "lift": "leg_press", "weight": 270, "reps": 10 }],
-  "note": "Day 2/31. Quad-only lower, strain-modified. Leg slightly better."
+  "note": "Day 2/31. Quad-only lower, strain-modified. Leg slightly better. Chipotle + guac."
 }

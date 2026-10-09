@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-05",
+  "cals": 2225,
+  "protein_g": 196,
+  "sleep_h": 5.73,
+  "shift": false,
+  "run": { "miles": 3.09, "seconds": 2192, "avg_hr": 132, "surface": "treadmill" },
+  "lifts": [
+    { "lift": "bench", "weight": 220, "reps": 5 },
+    { "lift": "pullup", "weight": 0, "reps": 9 }
+  ],
+  "note": "Day 5/31. Off shift, no scale. Bench 3x5 @ 220 done. No dip belt at Crunch Davie — bodyweight volume pull-ups 9/7/5/4 = 25 (baseline). Run 4:30pm at ~91°F, HR hard to hold down. Hamstring + calf tests passed."
+}

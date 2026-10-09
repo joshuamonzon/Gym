@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-09",
+  "weight_lb": 167.5,
+  "sleep_h": 9.13,
+  "shift": false,
+  "note": "Day 9/31 — no run (day after cortisone shot, doctor's orders; bike OK). Hamstring clean two mornings in a row. Oats ~11:45am.",
+  "plan": {
+    "cardio": { "type": "bike", "label": "Kickr Zone 2", "target": "HR ≤135", "duration_min": 45 },
+    "lift": {
+      "name": "Upper — isolation (pump only)",
+      "exercises": [
+        { "name": "Lateral raise", "sets": [{ "w": 15, "r": 15 }, { "w": 20, "r": 12 }, { "w": 20, "r": 12 }], "rest_s": 60 },
+        { "name": "Rear-delt fly", "sets": [{ "w": 15, "r": 15 }, { "w": 15, "r": 15 }, { "w": 15, "r": 15 }], "rest_s": 60 },
+        { "name": "Overhead tricep extension", "sets": [{ "w": 40, "r": 12 }, { "w": 50, "r": 10 }, { "w": 50, "r": 10 }], "rest_s": 90 },
+        { "name": "DB curl", "sets": [{ "w": 25, "r": 10 }, { "w": 30, "r": 8 }, { "w": 30, "r": 8 }], "rest_s": 90 },
+        { "name": "Hammer curl", "sets": [{ "w": 25, "r": 12 }, { "w": 25, "r": 12 }], "rest_s": 60 },
+        { "name": "Lat hang stretch", "sets": [{ "w": "BW", "r": "30 sec/side" }, { "w": "BW", "r": "30 sec/side" }] }
+      ],
+      "notes": ["No pressing, no pulling — Sunday is bench 3x5 @ 230", "RPE 7–8, done in 25 min", "Wall calf stretch only; skip heel-off-step for a few days"]
+    }
+  }
+}

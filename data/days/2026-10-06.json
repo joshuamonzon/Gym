@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-06",
+  "weight_lb": 168.2,
+  "cals": 2145,
+  "protein_g": 125,
+  "sleep_h": 9.68,
+  "shift": false,
+  "run": { "miles": 3.11, "seconds": 2152, "avg_hr": 129, "surface": "treadmill" },
+  "lifts": [{ "lift": "leg_press", "weight": 270, "reps": 10 }],
+  "note": "Day 6/31. 11:32/mi after 5-min walk, 85°F; fan fixed the mid-run queasiness. Legs ~90%. Lower: leg press 3x10 @ 270, goblet squat 3x12 @ 60, plank 3:00."
+}
