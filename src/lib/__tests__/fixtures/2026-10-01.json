@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-01",
+  "sleep_h": 7.27,
+  "shift": false,
+  "run": { "miles": 3.18, "seconds": 2401, "avg_hr": 128, "surface": "treadmill" },
+  "lifts": [
+    { "lift": "bench", "weight": 225, "reps": 5 },
+    { "lift": "pullup", "weight": 50, "reps": 5 },
+    { "lift": "row", "weight": 165, "reps": 5 }
+  ],
+  "note": "Day 1/31. R calf+hamstring grade 1 strain from Sep 30 TT. 3 cortaditos until lunch — cals not logged."
+}

@@ -15,9 +15,9 @@ import {
 } from '../rollups'
 import { weekStartOf, addDays, daysBetween } from '../dates'
 import config from '../../../data/config.json'
-import d1 from '../../../data/days/2026-10-01.json'
-import d2 from '../../../data/days/2026-10-02.json'
-import d3 from '../../../data/days/2026-10-03.json'
+import d1 from './fixtures/2026-10-01.json'
+import d2 from './fixtures/2026-10-02.json'
+import d3 from './fixtures/2026-10-03.json'
 
 const cfg = config as Config
 const seed = [d1, d2, d3] as Day[]
