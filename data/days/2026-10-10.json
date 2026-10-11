@@ -1,8 +1,12 @@
 {
   "date": "2026-10-10",
   "shift": true,
-  "note": "Day 10/31. Shift day — no lift. 5K back on per doctor.",
+  "note": "Day 10/31 MISSED \u2014 shift day, 4am walk didn't happen. Rest day. Right hip very sore (massage soreness from Oct 9 deep-tissue). Breakfast oats + protein latte + cheese danish; ~2,000 cal cap.",
   "plan": {
-    "cardio": { "type": "run", "label": "Easy 5K — first 2 min = hamstring jog test", "target": "11:30–12:00 /mi, HR ≤145. Pinch → walk it. No striders.", "duration_min": 40 }
-  }
+    "cardio": {
+      "type": "rest",
+      "label": "Rest \u2014 hip flaring, ortho Mon"
+    }
+  },
+  "sleep_h": 5.7
 }

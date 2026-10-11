@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-11",
+  "cals": 2350,
+  "protein_g": 170,
+  "sleep_h": 5.47,
+  "shift": false,
+  "lifts": [
+    { "lift": "bench", "weight": 230, "reps": 5 },
+    { "lift": "pullup", "weight": 55, "reps": 5 }
+  ],
+  "note": "Day 11/31 — no run (hip, ortho tomorrow). Recovery swim at Crunch Davie: 1,000 yd / 25:45, 1:55/100yd, HR 123 avg. Home upper: bench 3x5 @ 230 clean; weighted pull-ups +55x5 / +45x6 / +35x10; tricep pulldowns, face pulls, deadhangs 2x30s (rows skipped). Food: First Watch Healthy Turkey, Miami Slice pesto slice, dinner — cals/protein estimated to target. Sleep 5h28m.",
+  "plan": {
+    "cardio": { "type": "swim", "label": "Recovery swim — pull buoy", "target": "Easy, no kicking. 200 wu / 10x100 pull / 200 cd", "duration_min": 25 },
+    "lift": {
+      "name": "Upper — strength (home)",
+      "exercises": [
+        {
+          "name": "Bench",
+          "sets": [
+            { "w": 45, "r": 10, "warmup": true },
+            { "w": 135, "r": 5, "warmup": true },
+            { "w": 185, "r": 3, "warmup": true },
+            { "w": 205, "r": 1, "warmup": true },
+            { "w": 230, "r": 5 },
+            { "w": 230, "r": 5 },
+            { "w": 230, "r": 5 }
+          ],
+          "rest_s": 180
+        },
+        {
+          "name": "Weighted pull-ups",
+          "sets": [{ "w": "+55", "r": 5 }, { "w": "+45", "r": 6 }, { "w": "+35", "r": 8 }],
+          "rest_s": 180
+        },
+        {
+          "name": "Cable rows",
+          "sets": [{ "w": 175, "r": 5 }, { "w": 175, "r": 5 }, { "w": 175, "r": 5 }],
+          "rest_s": 120
+        },
+        {
+          "name": "Deadhang",
+          "sets": [{ "w": "BW", "r": "30 sec" }, { "w": "BW", "r": "30 sec" }]
+        }
+      ],
+      "notes": ["Nothing lower body, no deep hip flexion — ortho Mon", "Miss a rep on bench → rack it, repeat 230 next time"]
+    }
+  }
+}

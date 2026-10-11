@@ -43,7 +43,7 @@ export const PlanExerciseSchema = z.strictObject({
 })
 
 export const PlanCardioSchema = z.strictObject({
-  type: z.enum(['run', 'bike', 'walk', 'rest']),
+  type: z.enum(['run', 'bike', 'walk', 'swim', 'rest']),
   label: z.optional(z.string()),
   target: z.optional(z.string()),
   duration_min: z.optional(positive()),

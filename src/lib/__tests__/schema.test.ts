@@ -66,7 +66,7 @@ describe('plan', () => {
     expect(r.success).toBe(true)
   })
   it('rejects unknown cardio types and unknown keys', () => {
-    expect(DaySchema.safeParse({ date: '2026-10-08', plan: { cardio: { type: 'swim' } } }).success).toBe(false)
+    expect(DaySchema.safeParse({ date: '2026-10-08', plan: { cardio: { type: 'row' } } }).success).toBe(false)
     expect(DaySchema.safeParse({ date: '2026-10-08', plan: { lift: { exercises: [{ name: 'Bench', sets: [{ w: 225, r: 5, rpe: 8 }] }] } } }).success).toBe(false)
     expect(DaySchema.safeParse({ date: '2026-10-08', plan: { mobility: true } }).success).toBe(false)
   })
