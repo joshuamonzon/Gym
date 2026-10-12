@@ -19,6 +19,8 @@ export const RunSchema = z.strictObject({
   seconds: z.optional(posInt()),
   avg_hr: z.optional(posInt()),
   surface: z.optional(z.string().check(z.minLength(1))),
+  /** Treadmill total incl. walk warm-up — what counts for the challenge when `miles` is Garmin run-only. */
+  challenge_mi: z.optional(positive()),
 })
 
 /**

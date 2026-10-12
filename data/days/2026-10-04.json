@@ -5,6 +5,12 @@
   "protein_g": 205,
   "sleep_h": 5.73,
   "shift": true,
-  "run": { "miles": 2.85, "seconds": 2069, "avg_hr": 119, "surface": "treadmill" },
+  "run": {
+    "miles": 2.85,
+    "seconds": 2069,
+    "avg_hr": 119,
+    "surface": "treadmill",
+    "challenge_mi": 3.1
+  },
   "note": "Day 4/31. 4am pre-shift. Treadmill 3.10 mi total incl 5-min walk; run-only logged. Calf pain-free, hamstring a bit sore. Weigh-in after ramen night."
 }

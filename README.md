@@ -59,7 +59,7 @@ Rules from the spec:
 - `swim.meters` is canonical. A 25-yd pool is stored as yards × 0.9144, rounded (1,000 yd →
   914 m). `seconds` is moving time; `avg_hr`, `swolf` and `pool_m` are optional. Pace is
   derived as seconds per 100 m.
-- **Daily challenge rule:** a day counts when `run.miles ≥ 3.1` **or** `swim.meters ≥ 1000`
+- **Daily challenge rule:** a day counts when `run.challenge_mi ?? run.miles ≥ 3.1` **or** `swim.meters ≥ 900` (a 1,000-yd pool swim)
   **or** (legacy) `bike_min ≥ 30`. The streak and the October grid both use this rule; a run
   shows solid, a swim patterned, a bike dashed.
 - `plan` is display only (Today and Lifts screens). Set done-state lives in localStorage,

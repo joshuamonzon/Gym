@@ -63,7 +63,7 @@ describe('challenge rule', () => {
     expect(challengeKind({ date: '2026-10-01', run: { miles: 3.1 } })).toBe('run')
     expect(challengeKind({ date: '2026-10-01', run: { miles: 3.0 } })).toBeUndefined()
     expect(challengeKind({ date: '2026-10-01', swim: { meters: 1000, seconds: 1640 } })).toBe('swim')
-    expect(challengeKind({ date: '2026-10-01', swim: { meters: 914, seconds: 1545 } })).toBeUndefined()
+    expect(challengeKind({ date: '2026-10-01', swim: { meters: 800, seconds: 1400 } })).toBeUndefined()
     expect(challengeKind({ date: '2026-10-01', bike_min: 41 })).toBe('bike')
     expect(challengeKind({ date: '2026-10-01', bike_min: 29 })).toBeUndefined()
     expect(challengeKind({ date: '2026-10-01', run: { miles: 3.5 }, swim: { meters: 1000, seconds: 1640 } })).toBe('run')
@@ -74,7 +74,7 @@ describe('challenge rule', () => {
       { date: '2026-10-01', run: { miles: 3.1 } },
       { date: '2026-10-02', swim: { meters: 1000, seconds: 1700 } },
       { date: '2026-10-03', bike_min: 41 },
-      { date: '2026-10-04', swim: { meters: 900, seconds: 1500 } },
+      { date: '2026-10-04', swim: { meters: 800, seconds: 1400 } },
     ]
     expect(challengeStreak(days, cfg, '2026-10-03')).toBe(3)
     expect(challengeStreak(days, cfg, '2026-10-04')).toBe(3) // today's short swim doesn't count, doesn't break
@@ -218,7 +218,7 @@ describe('weekly rollup — swims', () => {
     const n = nowStats(days, cfg, '2026-10-14')
     expect(n.thisWeek.swimMeters).toBe(1914)
     expect(n.thisWeek.swimDays).toBe(2)
-    expect(n.streak).toBe(1) // Oct 14 run counts; Oct 13 swim was 914 m
+    expect(n.streak).toBe(2) // Oct 14 run + Oct 13 1,000-yd swim both count
   })
 })
 
@@ -281,5 +281,15 @@ describe('now stats — seed data on 2026-10-03', () => {
     expect(n.thisWeek.runDays).toBe(2)
     expect(n.thisWeek.liftDays).toBe(2)
     expect(n.thisWeek.estBurn).toBeCloseTo(0.63 * 167.4 * 6.28, 3)
+  })
+})
+
+describe('challenge_mi override', () => {
+  it('counts a treadmill total when Garmin run-only miles fall short', () => {
+    expect(challengeKind({ date: '2026-10-04', run: { miles: 2.85, seconds: 2069, challenge_mi: 3.1 } })).toBe('run')
+    expect(challengeKind({ date: '2026-10-04', run: { miles: 2.85, seconds: 2069 } })).toBeUndefined()
+  })
+  it('counts a 1,000-yd swim (914 m)', () => {
+    expect(challengeKind({ date: '2026-10-11', swim: { meters: 914, seconds: 1545 } })).toBe('swim')
   })
 })

@@ -6,27 +6,73 @@
   "shift": false,
   "bike_min": 41,
   "lifts": [
-    { "lift": "bench", "weight": 225, "reps": 5 },
-    { "lift": "pullup", "weight": 0, "reps": 10 },
-    { "lift": "row", "weight": 170, "reps": 5 }
+    {
+      "lift": "bench",
+      "weight": 225,
+      "reps": 5
+    },
+    {
+      "lift": "pullup",
+      "weight": 0,
+      "reps": 36
+    },
+    {
+      "lift": "row",
+      "weight": 170,
+      "reps": 5
+    }
   ],
-  "note": "Day 8/31 — no run (hamstring + plantar fasciitis, cortisone shot). Kickr Zone 2 41 min, 12.1 mi, 115W avg, HR 118. Bench 3x5 @ 225 clean; volume pull-ups 10/10/8/8 = 36; rows 3x5 @ 170. Birthday party pizza + cake, ~600 over target.",
+  "note": "Day 8/31 \u2014 no run (hamstring + plantar fasciitis, cortisone shot). Kickr Zone 2 41 min, 12.1 mi, 115W avg, HR 118. Bench 3x5 @ 225 clean; volume pull-ups 10/10/8/8 = 36; rows 3x5 @ 170. Birthday party pizza + cake, ~600 over target.",
   "plan": {
-    "cardio": { "type": "bike", "label": "Kickr Zone 2", "target": "HR ≤135", "duration_min": 40 },
+    "cardio": {
+      "type": "bike",
+      "label": "Kickr Zone 2",
+      "target": "HR \u2264135",
+      "duration_min": 40
+    },
     "lift": {
-      "name": "Upper — strength",
+      "name": "Upper \u2014 strength",
       "exercises": [
         {
           "name": "Bench",
           "sets": [
-            { "w": 45, "r": 10, "warmup": true },
-            { "w": 135, "r": 8, "warmup": true },
-            { "w": 185, "r": 3, "warmup": true },
-            { "w": 205, "r": 1, "warmup": true },
-            { "w": 225, "r": 1, "warmup": true },
-            { "w": 225, "r": 5 },
-            { "w": 225, "r": 5 },
-            { "w": 225, "r": 5 }
+            {
+              "w": 45,
+              "r": 10,
+              "warmup": true
+            },
+            {
+              "w": 135,
+              "r": 8,
+              "warmup": true
+            },
+            {
+              "w": 185,
+              "r": 3,
+              "warmup": true
+            },
+            {
+              "w": 205,
+              "r": 1,
+              "warmup": true
+            },
+            {
+              "w": 225,
+              "r": 1,
+              "warmup": true
+            },
+            {
+              "w": 225,
+              "r": 5
+            },
+            {
+              "w": 225,
+              "r": 5
+            },
+            {
+              "w": 225,
+              "r": 5
+            }
           ],
           "rest_s": 180
         },
@@ -34,19 +80,49 @@
           "name": "Pull-ups",
           "note": "Bodyweight, 3-sec negatives. Goal 26+ total.",
           "sets": [
-            { "w": "BW", "r": "max", "note": "target 10" },
-            { "w": "BW", "r": "max", "note": "target 8" },
-            { "w": "BW", "r": "max", "note": "target 5" },
-            { "w": "BW", "r": "to failure" }
+            {
+              "w": "BW",
+              "r": "max",
+              "note": "target 10"
+            },
+            {
+              "w": "BW",
+              "r": "max",
+              "note": "target 8"
+            },
+            {
+              "w": "BW",
+              "r": "max",
+              "note": "target 5"
+            },
+            {
+              "w": "BW",
+              "r": "to failure"
+            }
           ],
           "rest_s": 120
         },
         {
           "name": "Rows",
-          "sets": [{ "w": 170, "r": 5 }, { "w": 170, "r": 5 }, { "w": 170, "r": 5 }]
+          "sets": [
+            {
+              "w": 170,
+              "r": 5
+            },
+            {
+              "w": 170,
+              "r": 5
+            },
+            {
+              "w": 170,
+              "r": 5
+            }
+          ]
         }
       ],
-      "notes": ["No hamstring loading or deep hip flexion"]
+      "notes": [
+        "No hamstring loading or deep hip flexion"
+      ]
     }
   }
 }

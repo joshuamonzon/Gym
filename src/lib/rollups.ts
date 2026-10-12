@@ -8,7 +8,7 @@ import { addDays, daysBetween, weekStartOf } from './dates'
 export const METERS_PER_MILE = 1609.344
 export const FIVE_K_MILES = 3.1
 /** A swim of at least this many meters satisfies the daily challenge. */
-export const CHALLENGE_SWIM_METERS = 1000
+export const CHALLENGE_SWIM_METERS = 900 // 1,000 yd in a 25-yd pool = 914 m
 /** Legacy: a bike of at least this many minutes satisfies the daily challenge. */
 export const CHALLENGE_BIKE_MIN = 30
 
@@ -62,7 +62,7 @@ export function totalRunCalories(days: Day[], allDays: Day[], config: Config): n
 }
 
 export function isChallengeRun(run: Run | undefined): run is Run {
-  return !!run && (run.miles ?? 0) >= FIVE_K_MILES
+  return !!run && (run.challenge_mi ?? run.miles ?? 0) >= FIVE_K_MILES
 }
 
 // ---------- per-swim metrics ----------
