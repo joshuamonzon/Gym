@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-12",
+  "weight_lb": 170.2,
+  "cals": 2280,
+  "protein_g": 210,
+  "sleep_h": 8.92,
+  "shift": false,
+  "run": { "miles": 3.50, "seconds": 2486, "avg_hr": 134, "surface": "treadmill" },
+  "note": "Day 12/31. Ortho: right hip = cam impingement → 8 wks PT (starts Wed Oct 14). Run + swim only, upper lifting only, no bike, no deep hip flexion. Run 3.50 mi / 41:26 incl. walk, HR 134 — hamstring and hip fine. Swim Doral 1,000 m / 27:20, 1:35/100m, SWOLF 34. Weight 170.2 (heaviest, snack rule triggered). Sleep 8h55m / 98.",
+  "plan": {
+    "cardio": { "type": "run", "label": "Easy 5K + swim (Doral)", "target": "First 2 min = hamstring jog test. Then 1,000 m swim.", "duration_min": 70 },
+    "lift": {
+      "name": "Pump + deadhangs (no bench/pull-ups — upper was Sun)",
+      "exercises": [
+        { "name": "Lateral raise", "sets": [{ "w": 15, "r": 15 }, { "w": 20, "r": 12 }, { "w": 20, "r": 12 }], "rest_s": 60 },
+        { "name": "Rear-delt fly", "sets": [{ "w": 15, "r": 15 }, { "w": 15, "r": 15 }, { "w": 15, "r": 15 }], "rest_s": 60 },
+        { "name": "Overhead tricep extension", "sets": [{ "w": 50, "r": 10 }, { "w": 50, "r": 10 }, { "w": 50, "r": 10 }], "rest_s": 90 },
+        { "name": "DB curl", "sets": [{ "w": 30, "r": 8 }, { "w": 30, "r": 8 }, { "w": 30, "r": 8 }], "rest_s": 90 },
+        { "name": "Deadhang", "sets": [{ "w": "BW", "r": "35 sec" }, { "w": "BW", "r": "35 sec" }] }
+      ],
+      "notes": ["Next upper: Wed Oct 14 after PT — bench 3x5 @ 235, pull-ups +60/+50/+40, rows 175", "No leg press, no goblet/slant squats, no Kickr (ortho)"]
+    }
+  }
+}
