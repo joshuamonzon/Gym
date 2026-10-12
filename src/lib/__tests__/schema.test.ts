@@ -29,6 +29,13 @@ describe('DaySchema', () => {
     expect(DaySchema.safeParse({ date: '2026-10-05', run: { seconds: 2295.5 } }).success).toBe(false)
     expect(DaySchema.safeParse({ date: '2026-10-05', run: { miles: 3.1, max_hr: 170 } }).success).toBe(false)
   })
+  it('accepts a swim and rejects a malformed one', () => {
+    expect(DaySchema.safeParse({ date: '2026-10-12', swim: { meters: 1000, seconds: 1640, avg_hr: 133, swolf: 34, pool_m: 25 } }).success).toBe(true)
+    expect(DaySchema.safeParse({ date: '2026-10-11', swim: { meters: 914, seconds: 1545 } }).success).toBe(true)
+    expect(DaySchema.safeParse({ date: '2026-10-11', swim: { meters: 914 } }).success).toBe(false) // seconds required
+    expect(DaySchema.safeParse({ date: '2026-10-11', swim: { meters: 0, seconds: 100 } }).success).toBe(false)
+    expect(DaySchema.safeParse({ date: '2026-10-11', swim: { meters: 914, seconds: 1545, yards: 1000 } }).success).toBe(false)
+  })
   it('allows lift names the UI ignores (validate warns, UI drops them)', () => {
     expect(DaySchema.safeParse({ date: '2026-10-05', lifts: [{ lift: 'curl', weight: 40, reps: 10 }] }).success).toBe(true)
   })
@@ -44,6 +51,8 @@ describe('ConfigSchema', () => {
     }
     expect(ConfigSchema.safeParse(cfg).success).toBe(true)
     expect(ConfigSchema.safeParse({ ...cfg, week_start: 'sunday' }).success).toBe(false)
+    expect(ConfigSchema.safeParse({ ...cfg, cal_target: 2350, next: { bench: '3 × 5 @ 235' } }).success).toBe(true)
+    expect(ConfigSchema.safeParse({ ...cfg, next: { bench: 235 } }).success).toBe(false)
   })
 })
 
@@ -69,5 +78,6 @@ describe('plan', () => {
     expect(DaySchema.safeParse({ date: '2026-10-08', plan: { cardio: { type: 'row' } } }).success).toBe(false)
     expect(DaySchema.safeParse({ date: '2026-10-08', plan: { lift: { exercises: [{ name: 'Bench', sets: [{ w: 225, r: 5, rpe: 8 }] }] } } }).success).toBe(false)
     expect(DaySchema.safeParse({ date: '2026-10-08', plan: { mobility: true } }).success).toBe(false)
+    expect(DaySchema.safeParse({ date: '2026-10-08', plan: { mobility: ['Side bridge 10s/side'] } }).success).toBe(true)
   })
 })

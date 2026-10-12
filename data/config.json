@@ -2,5 +2,13 @@
   "challenge": { "name": "October 5K", "start": "2026-10-01", "end": "2026-10-31" },
   "tracked_lifts": ["bench", "pullup", "row", "leg_press"],
   "start_weight_lb": 167.4,
-  "week_start": "monday"
+  "week_start": "monday",
+  "cal_target": 2350,
+  "next": {
+    "bench": "3 × 5 @ 235",
+    "pullup_weighted": "+60 × 5, +50 × 6, +40 × 8",
+    "pullup_volume": "beat 36",
+    "row": "3 × 5 @ 175",
+    "leg_press": "hold — ortho"
+  }
 }

@@ -21,6 +21,18 @@ export const RunSchema = z.strictObject({
   surface: z.optional(z.string().check(z.minLength(1))),
 })
 
+/**
+ * A swim. `meters` is canonical: a 25-yd pool is stored as yards × 0.9144, rounded.
+ * `seconds` is moving time; `swolf` and `pool_m` are optional Garmin extras.
+ */
+export const SwimSchema = z.strictObject({
+  meters: positive(),
+  seconds: posInt(),
+  avg_hr: z.optional(posInt()),
+  swolf: z.optional(positive()),
+  pool_m: z.optional(positive()),
+})
+
 export const LiftSetSchema = z.strictObject({
   lift: z.string().check(z.minLength(1)),
   weight: nonneg(),
@@ -62,6 +74,8 @@ export const PlanLiftSchema = z.strictObject({
 export const PlanSchema = z.strictObject({
   cardio: z.optional(PlanCardioSchema),
   lift: z.optional(PlanLiftSchema),
+  /** Short mobility items, e.g. "Side bridge 10s/side". */
+  mobility: z.optional(z.array(z.string().check(z.minLength(1)))),
 })
 
 /**
@@ -77,6 +91,8 @@ export const DaySchema = z.strictObject({
   sleep_h: z.optional(nonneg()),
   shift: z.optional(z.boolean()),
   run: z.optional(RunSchema),
+  swim: z.optional(SwimSchema),
+  /** Legacy: Kickr minutes. Counts for the challenge at ≥ 30 min. */
   bike_min: z.optional(nonneg()),
   lifts: z.optional(z.array(LiftSetSchema)),
   note: z.optional(z.string()),
@@ -88,7 +104,9 @@ export type Plan = z.infer<typeof PlanSchema>
 export type PlanSet = z.infer<typeof PlanSetSchema>
 export type PlanExercise = z.infer<typeof PlanExerciseSchema>
 export type PlanCardio = z.infer<typeof PlanCardioSchema>
+export type PlanLift = z.infer<typeof PlanLiftSchema>
 export type Run = z.infer<typeof RunSchema>
+export type Swim = z.infer<typeof SwimSchema>
 export type LiftSet = z.infer<typeof LiftSetSchema>
 
 export const ConfigSchema = z.strictObject({
@@ -96,6 +114,10 @@ export const ConfigSchema = z.strictObject({
   tracked_lifts: z.array(z.string().check(z.minLength(1))),
   start_weight_lb: positive(),
   week_start: z.literal('monday'),
+  /** Daily calorie target the Week screen balances against. */
+  cal_target: z.optional(positive()),
+  /** Free-text "next session" prescription per lift, keyed by lift (pull-ups split into pullup_weighted / pullup_volume). */
+  next: z.optional(z.record(z.string(), z.string())),
 })
 
 export type Config = z.infer<typeof ConfigSchema>

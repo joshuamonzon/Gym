@@ -4,6 +4,7 @@
   "protein_g": 170,
   "sleep_h": 5.47,
   "shift": false,
+  "swim": { "meters": 914, "seconds": 1545, "avg_hr": 123, "swolf": 42 },
   "lifts": [
     { "lift": "bench", "weight": 230, "reps": 5 },
     { "lift": "pullup", "weight": 55, "reps": 5 }

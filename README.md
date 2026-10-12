@@ -1,7 +1,7 @@
 # Training
 
-Weekly rollups of weight, fuel, running and lifts, so one row answers "eating X cals /
-Y carbs while running Z miles → lost N lb, lifts went up." Spec:
+Weekly rollups of weight, fuel, running, swimming and lifts, so one row answers "eating X
+cals / Y carbs while running Z miles → lost N lb, lifts went up." Spec:
 [`training-dashboard-spec.md`](training-dashboard-spec.md). Open questions:
 [`QUESTIONS.md`](QUESTIONS.md).
 
@@ -36,9 +36,19 @@ A full day looks like this; include only the fields you have:
   "sleep_h": 6.5,
   "shift": false,
   "run": { "miles": 3.10, "seconds": 2295, "avg_hr": 126, "surface": "treadmill" },
+  "swim": { "meters": 1000, "seconds": 1640, "avg_hr": 133, "swolf": 34, "pool_m": 25 },
   "bike_min": 40,
   "lifts": [{ "lift": "bench", "weight": 225, "reps": 5 }],
-  "note": "free text"
+  "note": "free text",
+  "plan": {
+    "cardio": { "type": "run", "label": "Easy 5K", "target": "HR ≤145", "duration_min": 40 },
+    "lift": {
+      "name": "Upper — strength",
+      "exercises": [{ "name": "Bench", "sets": [{ "w": 135, "r": 8, "warmup": true }, { "w": 225, "r": 5 }], "rest_s": 180 }],
+      "notes": ["No hamstring loading"]
+    },
+    "mobility": ["Side bridge 10s/side", "Wall calf 30s/side"]
+  }
 }
 ```
 
@@ -46,6 +56,14 @@ Rules from the spec:
 
 - `run` is the main run (the 5K). `seconds` is run-only time. Distance is the treadmill
   number, never Garmin.
+- `swim.meters` is canonical. A 25-yd pool is stored as yards × 0.9144, rounded (1,000 yd →
+  914 m). `seconds` is moving time; `avg_hr`, `swolf` and `pool_m` are optional. Pace is
+  derived as seconds per 100 m.
+- **Daily challenge rule:** a day counts when `run.miles ≥ 3.1` **or** `swim.meters ≥ 1000`
+  **or** (legacy) `bike_min ≥ 30`. The streak and the October grid both use this rule; a run
+  shows solid, a swim patterned, a bike dashed.
+- `plan` is display only (Today and Lifts screens). Set done-state lives in localStorage,
+  never in the file. `plan.cardio.type` is one of `run`, `bike`, `walk`, `swim`, `rest`.
 - `lifts[]` holds the top working set per tracked lift. `lift` is one of `bench`,
   `pullup` (`weight` = added load), `row`, `leg_press`, `squat`, `deadlift`. Other names
   validate but the UI ignores them.
@@ -79,9 +97,12 @@ npm run build        # production build into dist/
 
 Layout:
 
-- `data/config.json` — challenge window, tracked lifts, start weight, week start
+- `data/config.json` — challenge window, tracked lifts, start weight, week start,
+  `cal_target` (daily calorie target for the Week screen) and `next` (free-text "next
+  session" per lift: `bench`, `pullup_weighted`, `pullup_volume`, `row`, `leg_press`)
 - `data/days/*.json` — one file per day
 - `src/lib/schema.ts` — zod schema for day files and config
 - `src/lib/rollups.ts` — all derived metrics, pure functions, unit-tested
-- `src/screens/` — Now, Weeks, Charts, Log
+- `src/screens/` — Today (challenge grid + plan), Week (strip + charts), Lifts (loaded
+  session + last/next per lift)
 - `scripts/validate.ts`, `scripts/add.ts` — the two CLIs above

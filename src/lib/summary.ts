@@ -1,6 +1,6 @@
 /** Short, human-readable facts about a day. Missing fields are simply left out. */
 import type { Config, Day } from './schema'
-import { aerobicEfficiency, bodyweightOn, paceSecPerMile, runCalories } from './rollups'
+import { aerobicEfficiency, bodyweightOn, paceSecPerMile, runCalories, swimPaceSecPer100m } from './rollups'
 import { liftLabel, mmss, num, pace, topSet } from './format'
 
 /** "3.18 mi in 40:01" */
@@ -28,6 +28,15 @@ export function runDetailLine(day: Day, allDays: Day[], config: Config, withEff 
     if (e !== undefined) parts.push(`eff ${num(e, 2)}`)
   }
   return parts.length ? parts.join(' · ') : undefined
+}
+
+/** "1,000 m swim, 1:35/100m · 133 bpm" */
+export function swimLine(day: Day): string | undefined {
+  const s = day.swim
+  if (!s) return undefined
+  const parts = [`${num(s.meters)} m swim, ${mmss(swimPaceSecPer100m(s))}/100m`]
+  if (s.avg_hr !== undefined) parts.push(`${s.avg_hr} bpm`)
+  return parts.join(' · ')
 }
 
 /** "Bench 225×5 · Pull-up +50×5" */

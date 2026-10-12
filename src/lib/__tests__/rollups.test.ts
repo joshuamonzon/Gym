@@ -3,6 +3,7 @@ import type { Config, Day } from '../schema'
 import {
   aerobicEfficiency,
   bodyweightOn,
+  challengeKind,
   challengeStreak,
   dailyE1rm,
   e1rmFor,
@@ -10,6 +11,7 @@ import {
   nowStats,
   paceSecPerMile,
   runCalories,
+  swimPaceSecPer100m,
   weeklyRollups,
   weightSeries,
 } from '../rollups'
@@ -45,6 +47,38 @@ describe('per-run metrics', () => {
     expect(aerobicEfficiency({ miles: 3.18, seconds: 2401, avg_hr: 128 })).toBeCloseTo(0.99914, 4)
     expect(aerobicEfficiency({ miles: 3.1, seconds: 2295, avg_hr: 126 })).toBeCloseTo(1.03516, 4)
     expect(aerobicEfficiency({ miles: 3.1, seconds: 2295 })).toBeUndefined()
+  })
+})
+
+describe('per-swim metrics', () => {
+  it('pace is seconds per 100 m', () => {
+    expect(swimPaceSecPer100m({ meters: 1000, seconds: 1640 })).toBeCloseTo(164, 5) // 2:44 /100m
+    // 1,000 yd pool stored as 914 m / 25:45
+    expect(swimPaceSecPer100m({ meters: 914, seconds: 1545 })).toBeCloseTo(169.04, 2)
+  })
+})
+
+describe('challenge rule', () => {
+  it('a run ≥ 3.1 mi, a swim ≥ 1,000 m, or a legacy bike ≥ 30 min each count; run wins when several exist', () => {
+    expect(challengeKind({ date: '2026-10-01', run: { miles: 3.1 } })).toBe('run')
+    expect(challengeKind({ date: '2026-10-01', run: { miles: 3.0 } })).toBeUndefined()
+    expect(challengeKind({ date: '2026-10-01', swim: { meters: 1000, seconds: 1640 } })).toBe('swim')
+    expect(challengeKind({ date: '2026-10-01', swim: { meters: 914, seconds: 1545 } })).toBeUndefined()
+    expect(challengeKind({ date: '2026-10-01', bike_min: 41 })).toBe('bike')
+    expect(challengeKind({ date: '2026-10-01', bike_min: 29 })).toBeUndefined()
+    expect(challengeKind({ date: '2026-10-01', run: { miles: 3.5 }, swim: { meters: 1000, seconds: 1640 } })).toBe('run')
+    expect(challengeKind(undefined)).toBeUndefined()
+  })
+  it('swims and bikes keep the streak alive', () => {
+    const days: Day[] = [
+      { date: '2026-10-01', run: { miles: 3.1 } },
+      { date: '2026-10-02', swim: { meters: 1000, seconds: 1700 } },
+      { date: '2026-10-03', bike_min: 41 },
+      { date: '2026-10-04', swim: { meters: 900, seconds: 1500 } },
+    ]
+    expect(challengeStreak(days, cfg, '2026-10-03')).toBe(3)
+    expect(challengeStreak(days, cfg, '2026-10-04')).toBe(3) // today's short swim doesn't count, doesn't break
+    expect(challengeStreak(days, cfg, '2026-10-05')).toBe(0)
   })
 })
 
@@ -108,6 +142,13 @@ describe('weekly rollup — Oct 1–3 seed data, by hand', () => {
     expect(w.runDays).toBe(2)
   })
 
+  it('swims: none logged → 0 m, 0 min, no pace', () => {
+    expect(w.totalSwimMeters).toBe(0)
+    expect(w.swimMinutes).toBe(0)
+    expect(w.swimDays).toBe(0)
+    expect(w.avgSwimPace).toBeUndefined()
+  })
+
   it('est burn: 0.63 × 167.4 lb × 6.28 mi = 662.3 kcal (no weigh-in before Oct 3 → start weight)', () => {
     expect(runCalories({ miles: 3.18 }, 167.4)).toBeCloseTo(335.4, 1)
     expect(runCalories(undefined, 167.4)).toBeUndefined()
@@ -156,6 +197,28 @@ describe('weekly rollup — deltas vs prior week', () => {
     expect(weeks[0].liftDelta.bench).toBeCloseTo(230 * (7 / 6) - 262.5, 3)
     expect(weeks[0].liftDelta.pullup).toBeUndefined()
     expect(weeks[0].lifts.pullup).toBeUndefined()
+  })
+})
+
+describe('weekly rollup — swims', () => {
+  const days: Day[] = [
+    { date: '2026-10-13', swim: { meters: 914, seconds: 1545, avg_hr: 123 } },
+    { date: '2026-10-14', run: { miles: 3.5, seconds: 2486 }, swim: { meters: 1000, seconds: 1640, avg_hr: 133 } },
+  ]
+  const w = weeklyRollups(days, cfg)[0]
+  it('totals meters and minutes; pace is time-weighted over distance', () => {
+    expect(w.start).toBe('2026-10-12') // Oct 12 is a Monday
+    expect(w.totalSwimMeters).toBe(1914)
+    expect(w.swimMinutes).toBeCloseTo(3185 / 60, 5) // 53.08 min
+    expect(w.swimDays).toBe(2)
+    expect(w.avgSwimPace).toBeCloseTo((3185 / 1914) * 100, 5) // 166.4 s/100m
+    expect(w.runDays).toBe(1)
+  })
+  it('now stats count this week\'s swims', () => {
+    const n = nowStats(days, cfg, '2026-10-14')
+    expect(n.thisWeek.swimMeters).toBe(1914)
+    expect(n.thisWeek.swimDays).toBe(2)
+    expect(n.streak).toBe(1) // Oct 14 run counts; Oct 13 swim was 914 m
   })
 })
 

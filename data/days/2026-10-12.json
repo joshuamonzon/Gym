@@ -6,6 +6,7 @@
   "sleep_h": 8.92,
   "shift": false,
   "run": { "miles": 3.50, "seconds": 2486, "avg_hr": 134, "surface": "treadmill" },
+  "swim": { "meters": 1000, "seconds": 1640, "avg_hr": 133, "swolf": 34, "pool_m": 25 },
   "note": "Day 12/31. Ortho: right hip = cam impingement → 8 wks PT (starts Wed Oct 14). Run + swim only, upper lifting only, no bike, no deep hip flexion. Run 3.50 mi / 41:26 incl. walk, HR 134 — hamstring and hip fine. Swim Doral 1,000 m / 27:20, 1:35/100m, SWOLF 34. Weight 170.2 (heaviest, snack rule triggered). Sleep 8h55m / 98.",
   "plan": {
     "cardio": { "type": "run", "label": "Easy 5K + swim (Doral)", "target": "First 2 min = hamstring jog test. Then 1,000 m swim.", "duration_min": 70 },

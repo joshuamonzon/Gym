@@ -2,11 +2,15 @@
  * Pure rollup math. No React, no I/O. Everything the screens show that isn't
  * raw day data is computed here.
  */
-import type { Config, Day, LiftSet, Run } from './schema'
+import type { Config, Day, LiftSet, Run, Swim } from './schema'
 import { addDays, daysBetween, weekStartOf } from './dates'
 
 export const METERS_PER_MILE = 1609.344
 export const FIVE_K_MILES = 3.1
+/** A swim of at least this many meters satisfies the daily challenge. */
+export const CHALLENGE_SWIM_METERS = 1000
+/** Legacy: a bike of at least this many minutes satisfies the daily challenge. */
+export const CHALLENGE_BIKE_MIN = 30
 
 // ---------- small helpers ----------
 
@@ -59,6 +63,35 @@ export function totalRunCalories(days: Day[], allDays: Day[], config: Config): n
 
 export function isChallengeRun(run: Run | undefined): run is Run {
   return !!run && (run.miles ?? 0) >= FIVE_K_MILES
+}
+
+// ---------- per-swim metrics ----------
+
+/** Swim pace in seconds per 100 m. */
+export function swimPaceSecPer100m(swim: Swim): number {
+  return (swim.seconds / swim.meters) * 100
+}
+
+export function isChallengeSwim(swim: Swim | undefined): swim is Swim {
+  return !!swim && swim.meters >= CHALLENGE_SWIM_METERS
+}
+
+export type ChallengeKind = 'run' | 'swim' | 'bike'
+
+/**
+ * What satisfied the daily challenge on a day: a run ≥ 3.1 mi, else a swim
+ * ≥ 1,000 m, else (legacy) a bike ≥ 30 min. Undefined when nothing did.
+ */
+export function challengeKind(day: Day | undefined): ChallengeKind | undefined {
+  if (!day) return undefined
+  if (isChallengeRun(day.run)) return 'run'
+  if (isChallengeSwim(day.swim)) return 'swim'
+  if ((day.bike_min ?? 0) >= CHALLENGE_BIKE_MIN) return 'bike'
+  return undefined
+}
+
+export function isChallengeDay(day: Day | undefined): boolean {
+  return challengeKind(day) !== undefined
 }
 
 // ---------- lifts ----------
@@ -138,6 +171,13 @@ export interface WeekRollup {
   /** mean of per-run aerobic efficiency */
   efficiency?: number
   runDays: number
+  /** total swim distance, meters */
+  totalSwimMeters: number
+  /** total swim time, minutes */
+  swimMinutes: number
+  swimDays: number
+  /** total swim seconds / total swim meters × 100, in seconds per 100 m */
+  avgSwimPace?: number
   /** estimated calories burned by this week's runs */
   estBurn: number
   shiftDays: number
@@ -154,6 +194,9 @@ export function rollupWeek(start: string, days: Day[], allDays: Day[], config: C
   const totalMiles = sum(defined(runs.map((r) => r.miles)))
   const timedMiles = sum(timed.map((r) => r.miles!))
   const timedSeconds = sum(timed.map((r) => r.seconds!))
+  const swims = defined(days.map((d) => d.swim))
+  const swimMeters = sum(swims.map((s) => s.meters))
+  const swimSeconds = sum(swims.map((s) => s.seconds))
   const lifts: Record<string, TopSet | undefined> = {}
   for (const lift of config.tracked_lifts) lifts[lift] = bestTopSet(lift, days, allDays, config)
   return {
@@ -169,6 +212,10 @@ export function rollupWeek(start: string, days: Day[], allDays: Day[], config: C
     avgRunHr: mean(defined(runs.map((r) => r.avg_hr))),
     efficiency: mean(defined(runs.map(aerobicEfficiency))),
     runDays: runs.length,
+    totalSwimMeters: swimMeters,
+    swimMinutes: swimSeconds / 60,
+    swimDays: swims.length,
+    avgSwimPace: swimMeters > 0 ? (swimSeconds / swimMeters) * 100 : undefined,
     estBurn: totalRunCalories(days, allDays, config),
     shiftDays: days.filter((d) => d.shift === true).length,
     avgSleep: mean(defined(days.map((d) => d.sleep_h))),
@@ -252,22 +299,22 @@ export interface NowStats {
   /** seconds of the fastest run ≥ 3.1 mi in the calendar month of `today` */
   best5kSeconds?: number
   benchE1rm?: number
-  thisWeek: { miles: number; runDays: number; liftDays: number; estBurn: number }
+  thisWeek: { miles: number; runDays: number; swimMeters: number; swimDays: number; liftDays: number; estBurn: number }
 }
 
 /**
- * Consecutive days with a run ≥ 3.1 mi since challenge.start, counted back from
- * yesterday. Today adds 1 if its run is already logged, but never breaks the
- * streak (the day isn't over).
+ * Consecutive challenge days (see `challengeKind`) since challenge.start, counted
+ * back from yesterday. Today adds 1 if its session is already logged, but never
+ * breaks the streak (the day isn't over).
  */
 export function challengeStreak(days: Day[], config: Config, today: string): number {
   const byDate = new Map(days.map((d) => [d.date, d]))
   const start = config.challenge.start
   if (today < start) return 0
-  let n = isChallengeRun(byDate.get(today)?.run) ? 1 : 0
+  let n = isChallengeDay(byDate.get(today)) ? 1 : 0
   let cursor = addDays(today, -1)
   while (cursor >= start) {
-    if (!isChallengeRun(byDate.get(cursor)?.run)) break
+    if (!isChallengeDay(byDate.get(cursor))) break
     n++
     cursor = addDays(cursor, -1)
   }
@@ -299,6 +346,8 @@ export function nowStats(days: Day[], config: Config, today: string): NowStats {
     thisWeek: {
       miles: sum(defined(thisWeekDays.map((d) => d.run?.miles))),
       runDays: thisWeekDays.filter((d) => d.run).length,
+      swimMeters: sum(defined(thisWeekDays.map((d) => d.swim?.meters))),
+      swimDays: thisWeekDays.filter((d) => d.swim).length,
       liftDays: thisWeekDays.filter((d) => (d.lifts?.length ?? 0) > 0).length,
       estBurn: totalRunCalories(thisWeekDays, sorted, config),
     },
