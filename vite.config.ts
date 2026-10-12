@@ -17,8 +17,8 @@ export default defineConfig({
         description: 'Weekly training rollups: weight, fuel, running, lifts.',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#0b0b0d',
-        theme_color: '#0b0b0d',
+        background_color: '#111214',
+        theme_color: '#111214',
         start_url: '/',
         scope: '/',
         icons: [

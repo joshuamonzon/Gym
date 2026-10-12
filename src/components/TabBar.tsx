@@ -1,35 +1,26 @@
-export type Tab = 'now' | 'weeks' | 'charts' | 'log'
+import { TABS, type Tab } from '../lib/tabs'
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  // Simple stroke paths, 24×24 viewBox.
-  { id: 'now', label: 'Today', icon: 'M12 3v2M12 19v2M3 12h2M19 12h2M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z' },
-  { id: 'weeks', label: 'Weeks', icon: 'M4 5h16v4H4zM4 10h16v4H4zM4 15h16v4H4z' },
-  { id: 'charts', label: 'Charts', icon: 'M4 20V10M10 20V4M16 20v-7M22 20H2' },
-  { id: 'log', label: 'Log', icon: 'M6 4h12v16H6zM9 8h6M9 12h6M9 16h4' },
-]
+const META: Record<Tab, { label: string; icon: string }> = {
+  // Stroke paths, 24×24 viewBox.
+  today: { label: 'Today', icon: 'M3 8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM3 10h18M8 3v4M16 3v4' },
+  week: { label: 'Week', icon: 'M4 19V9M10 19V5M16 19v-8M22 19H2' },
+  lifts: { label: 'Lifts', icon: 'M2 12h3M19 12h3M5 8v8M19 8v8M8 6v12M16 6v12M8 12h8' },
+}
 
 export function TabBar({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
   return (
-    <nav
-      aria-label="Screens"
-      className="fixed bottom-0 inset-x-0 z-20 bg-surface/95 backdrop-blur border-t border-border pb-safe"
-    >
-      <ul className="mx-auto max-w-xl grid grid-cols-4 h-14">
-        {TABS.map((t) => {
-          const active = t.id === tab
+    <nav className="tabs" aria-label="Screens">
+      <ul role="tablist">
+        {TABS.map((id) => {
+          const m = META[id]
+          const active = id === tab
           return (
-            <li key={t.id}>
-              <button
-                onClick={() => onChange(t.id)}
-                aria-current={active ? 'page' : undefined}
-                className={`w-full h-full flex flex-col items-center justify-center gap-0.5 text-[11px] ${
-                  active ? 'text-fg' : 'text-muted'
-                }`}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d={t.icon} />
+            <li key={id}>
+              <button type="button" role="tab" aria-selected={active} aria-controls={`s-${id}`} className="tab" onClick={() => onChange(id)}>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d={m.icon} />
                 </svg>
-                {t.label}
+                {m.label}
               </button>
             </li>
           )
